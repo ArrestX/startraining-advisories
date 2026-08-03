@@ -5,7 +5,7 @@
 | Vendor | zhistaredu |
 | Product | StarTraining（职星学院） |
 | Version | 3.8.1 |
-| Type | Cross-site Scripting |
+| Type | Cross Site Scripting |
 | CWE | CWE-434 / CWE-79 |
 | 认证 | Authenticated user with upload permission |
 | 严重度 | High |

@@ -5,7 +5,7 @@
 | Vendor | zhistaredu |
 | Product | StarTraining（职星学院） |
 | Version | 3.8.1 |
-| Type | Security Misconfiguration |
+| Type | Missing Authentication |
 | CWE | CWE-306 / CWE-200 |
 | 认证 | None |
 | 严重度 | High |
