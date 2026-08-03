@@ -62,8 +62,6 @@ userId=fa36ec75-160a-47e4-8140-ef1e94c5d329&roleIds=0cd789a0-1187-4c62-901d-a280
 
 ![authRole](./screenshots/ST-VULN-004-authRole.png)
 
-<!-- 截图：浏览器打开上方链接，按 F1；或跑 python capture_startraining_evidence.py -->
-
 ## 影响
 
 租户内横向/纵向提权。

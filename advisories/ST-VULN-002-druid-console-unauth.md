@@ -41,8 +41,6 @@ Connection: close
 
 ![druid](./screenshots/ST-VULN-002-druid.png)
 
-<!-- 截图：浏览器打开上方链接，按 F1；或跑 python capture_startraining_evidence.py -->
-
 ## 影响
 
 库连接信息、SQL、URI 统计裸奔，方便继续挖注入。

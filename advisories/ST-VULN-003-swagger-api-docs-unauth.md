@@ -45,8 +45,6 @@ Connection: close
 
 ![swagger](./screenshots/ST-VULN-003-swagger.png)
 
-<!-- 截图：浏览器打开上方链接，按 F1；或跑 python capture_startraining_evidence.py -->
-
 ## 影响
 
 攻击面枚举成本接近为零。

@@ -63,8 +63,6 @@ Content-Type: text/html
 
 ![xss](./screenshots/ST-VULN-006-xss.png)
 
-<!-- 截图：浏览器打开上方链接，按 F1；或跑 python capture_startraining_evidence.py -->
-
 ## 影响
 
 管理员点开上传资源就中存储 XSS。

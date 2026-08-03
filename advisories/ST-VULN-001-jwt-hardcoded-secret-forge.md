@@ -52,8 +52,6 @@ Connection: close
 
 ![jwt-forge](./screenshots/ST-VULN-001-jwt-forge.png)
 
-<!-- 截图：浏览器打开上方链接，按 F1；或跑 python capture_startraining_evidence.py -->
-
 ## 影响
 
 未登录也能冒充任意用户打业务接口。

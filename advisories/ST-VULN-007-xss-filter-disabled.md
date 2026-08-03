@@ -48,8 +48,6 @@ Connection: close
 
 （配置截图；也可只贴 yml 片段）
 
-<!-- 截图：浏览器打开上方链接，按 F1；或跑 python capture_startraining_evidence.py -->
-
 ## 影响
 
 公告等内容位更容易被 XSS 打穿，和 006 叠在一起更狠。
