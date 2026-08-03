@@ -1,32 +1,32 @@
-# StarTraining — Swagger / api-docs 未授权暴露 (ST-VULN-003)
+# StarTraining — Unauthenticated Swagger / api-docs exposure (ST-VULN-003)
 
-| 项 | 内容 |
-|----|------|
+| Field | Value |
+|-------|-------|
 | Vendor | zhistaredu |
-| Product | StarTraining（职星学院） |
+| Product | StarTraining |
 | Version | 3.8.1 |
 | Type | Missing Authentication |
 | CWE | CWE-306 / CWE-200 |
-| 认证 | None |
-| 严重度 | High |
+| Authentication | None |
+| Severity | High |
 
-## 说明
+## Summary
 
-Swagger UI 和 /v3/api-docs 匿名可访问，整站接口一目了然。
+Swagger UI and `/v3/api-docs` are anonymous while swagger is enabled.
 
-## 根因
+## Root cause
 
-SecurityConfig 把 swagger 路径加进了匿名白名单。
+SecurityConfig anonymous matchers for swagger paths.
 
-## 利用链接 / 复现
+## Exploit / reproduction
 
-浏览器直接开（匿名）：
+Open in browser (no auth):
 
 - [http://127.0.0.1:8900/swagger-ui/index.html](http://127.0.0.1:8900/swagger-ui/index.html)
 - [http://127.0.0.1:8900/v3/api-docs](http://127.0.0.1:8900/v3/api-docs)
 
 
-## 请求包（Yakit）
+## PoC (Yakit)
 
 ```http
 GET /swagger-ui/index.html HTTP/1.1
@@ -39,21 +39,21 @@ Host: 127.0.0.1:8900
 Connection: close
 ```
 
-期望：打开 swagger-ui 能看到 Api Documentation；api-docs 返回 OpenAPI JSON。
+Expected: HTTP 200 Swagger UI or OpenAPI JSON listing all endpoints
 
-## 截图
+## Screenshots
 
 ![swagger](./screenshots/ST-VULN-003-swagger.png)
 
-## 影响
+## Impact
 
-攻击面枚举成本接近为零。
+Full API surface enumeration for attackers.
 
-## 修复
+## Remediation
 
-生产关掉 swagger，或者挂到管理鉴权后面。
+Disable swagger in production or require admin auth.
 
-## 关联
+## References
 
-- 本地报告：`../POC_VERIFICATION_REPORT.md`
-- 脚本：`poc_verify/startraining_poc_verify.py` / `startraining_jwt_forge.py`
+- Local report: `../POC_VERIFICATION_REPORT.md`
+- Scripts: `poc_verify/startraining_poc_verify.py`, `startraining_jwt_forge.py`

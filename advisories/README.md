@@ -1,18 +1,18 @@
-# StarTraining（职星学院）Security Advisories
+# StarTraining Security Advisories
 
-本地复现目标：`http://127.0.0.1:8900`
+Lab target: `http://127.0.0.1:8900`
 
-| ID | 文件 | 严重度 | 认证 |
-|----|------|--------|------|
-| ST-VULN-001 | [ST-VULN-001-jwt-hardcoded-secret-forge.md](./ST-VULN-001-jwt-hardcoded-secret-forge.md) | Critical | None (offline forge with default secret) |
-| ST-VULN-002 | [ST-VULN-002-druid-console-unauth.md](./ST-VULN-002-druid-console-unauth.md) | High | None |
-| ST-VULN-003 | [ST-VULN-003-swagger-api-docs-unauth.md](./ST-VULN-003-swagger-api-docs-unauth.md) | High | None |
-| ST-VULN-004 | [ST-VULN-004-idor-auth-role-privesc.md](./ST-VULN-004-idor-auth-role-privesc.md) | Critical | Any authenticated user (low-priv token sufficient) |
-| ST-VULN-005 | [ST-VULN-005-role-crud-missing-preauthorize.md](./ST-VULN-005-role-crud-missing-preauthorize.md) | High | Any authenticated user |
-| ST-VULN-006 | [ST-VULN-006-stored-html-upload-xss.md](./ST-VULN-006-stored-html-upload-xss.md) | High | Authenticated user with upload permission |
-| ST-VULN-007 | [ST-VULN-007-xss-filter-disabled.md](./ST-VULN-007-xss-filter-disabled.md) | Medium | N/A (defense-in-depth) |
+| ID | File | Severity | Auth |
+|----|------|----------|------|
+| ST-VULN-001 | [Hardcoded JWT secret allows forged identity tokens](./ST-VULN-001-jwt-hardcoded-secret-forge.md) | Critical | None (offline forge with default secret) |
+| ST-VULN-002 | [Unauthenticated Druid monitor console access](./ST-VULN-002-druid-console-unauth.md) | High | None |
+| ST-VULN-003 | [Unauthenticated Swagger / api-docs exposure](./ST-VULN-003-swagger-api-docs-unauth.md) | High | None |
+| ST-VULN-004 | [Broken data-scope check enables arbitrary role reassignment (IDOR)](./ST-VULN-004-idor-auth-role-privesc.md) | Critical | Any authenticated user (low-priv token sufficient) |
+| ST-VULN-005 | [Role management APIs missing method-level authorization](./ST-VULN-005-role-crud-missing-preauthorize.md) | High | Any authenticated user |
+| ST-VULN-006 | [HTML upload allowed and /profile/** served anonymously (stored XSS)](./ST-VULN-006-stored-html-upload-xss.md) | High | Authenticated user with upload permission |
+| ST-VULN-007 | [Global XSS filter disabled](./ST-VULN-007-xss-filter-disabled.md) | Medium | N/A (defense-in-depth) |
 
-## 一键核实
+## Verify
 
 ```bash
 cd ../../poc_verify
@@ -21,5 +21,5 @@ python3 capture_startraining_evidence.py
 python3 generate_startraining_advisories.py
 ```
 
-账号：`admin` / `wukong`，密码 `admin123`。
+Accounts: `admin` / `wukong`, password `admin123`.
 

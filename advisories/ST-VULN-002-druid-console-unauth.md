@@ -1,33 +1,33 @@
-# StarTraining — Druid 监控控制台未授权访问 (ST-VULN-002)
+# StarTraining — Unauthenticated Druid monitor console access (ST-VULN-002)
 
-| 项 | 内容 |
-|----|------|
+| Field | Value |
+|-------|-------|
 | Vendor | zhistaredu |
-| Product | StarTraining（职星学院） |
+| Product | StarTraining |
 | Version | 3.8.1 |
 | Type | Use of Default Credentials |
 | CWE | CWE-306 / CWE-200 |
-| 认证 | None |
-| 严重度 | High |
+| Authentication | None |
+| Severity | High |
 
-## 说明
+## Summary
 
-Spring Security 把 /druid/** 放行了，Druid 控制台账号密码还是空的。浏览器直接打开就能看数据源和 SQL。
+Spring Security permits `/druid/**` anonymously while `statViewServlet` is enabled with empty login-username/password.
 
-## 根因
+## Root cause
 
-SecurityConfig 对 /druid/** 走 anonymous；statViewServlet 没设登录凭据。
+SecurityConfig `.anonymous()` on `/druid/**`; Druid console credentials unset.
 
-## 利用链接 / 复现
+## Exploit / reproduction
 
-浏览器直接开（匿名）：
+Open in browser (no auth):
 
 - [http://127.0.0.1:8900/druid/index.html](http://127.0.0.1:8900/druid/index.html)
-- [http://127.0.0.1:8900/druid/login.html](http://127.0.0.1:8900/druid/login.html)（账号密码空也能进）
+- [http://127.0.0.1:8900/druid/login.html](http://127.0.0.1:8900/druid/login.html) (empty username/password works)
 - [http://127.0.0.1:8900/druid/sql.html](http://127.0.0.1:8900/druid/sql.html)
 
 
-## 请求包（Yakit）
+## PoC (Yakit)
 
 ```http
 GET /druid/index.html HTTP/1.1
@@ -35,21 +35,21 @@ Host: 127.0.0.1:8900
 Connection: close
 ```
 
-期望：匿名 GET /druid/index.html 返回 200 监控页。
+Expected: HTTP 200 Druid console HTML (SQL stat / datasource info)
 
-## 截图
+## Screenshots
 
 ![druid](./screenshots/ST-VULN-002-druid.png)
 
-## 影响
+## Impact
 
-库连接信息、SQL、URI 统计裸奔，方便继续挖注入。
+Information disclosure; aids SQLi / lateral movement.
 
-## 修复
+## Remediation
 
-生产关掉或加强鉴权，最好再加 IP 限制。
+Require authentication; set druid login credentials; restrict by IP.
 
-## 关联
+## References
 
-- 本地报告：`../POC_VERIFICATION_REPORT.md`
-- 脚本：`poc_verify/startraining_poc_verify.py` / `startraining_jwt_forge.py`
+- Local report: `../POC_VERIFICATION_REPORT.md`
+- Scripts: `poc_verify/startraining_poc_verify.py`, `startraining_jwt_forge.py`

@@ -1,36 +1,36 @@
-# StarTraining — 全局 XSS 过滤器关闭 (ST-VULN-007)
+# StarTraining — Global XSS filter disabled (ST-VULN-007)
 
-| 项 | 内容 |
-|----|------|
+| Field | Value |
+|-------|-------|
 | Vendor | zhistaredu |
-| Product | StarTraining（职星学院） |
+| Product | StarTraining |
 | Version | 3.8.1 |
 | Type | Cross Site Scripting |
 | CWE | CWE-79 |
-| 认证 | N/A (defense-in-depth) |
-| 严重度 | Medium |
+| Authentication | N/A (defense-in-depth) |
+| Severity | Medium |
 
-## 说明
+## Summary
 
-application.yml 里 xss.enabled=false，全局 XSS 过滤关着。
+`application.yml` sets `xss.enabled: false`, disabling servlet XSS filter.
 
-## 根因
+## Root cause
 
-配置开关关了。
+Misconfiguration of xss filter switch.
 
-## 利用链接 / 复现
+## Exploit / reproduction
 
-配置项，不是单独接口：
+Config only (not a standalone endpoint):
 
-- 文件：`edu-admin/src/main/resources/application.yml`
-- 键：`xss.enabled: false`
+- File: `edu-admin/src/main/resources/application.yml`
+- Key: `xss.enabled: false`
 
-配合 ST-VULN-006 看存储 XSS 更明显。相关后台接口示例：
+Pairs with ST-VULN-006 for stored XSS. Related admin API example:
 
-- `http://127.0.0.1:8900/system/notice/list`（需 token）
+- `http://127.0.0.1:8900/system/notice/list` (requires token)
 
 
-## 请求包（Yakit）
+## PoC (Yakit)
 
 ```http
 # Code/config verification — POST notice/content endpoints accept raw HTML when filter off
@@ -40,23 +40,21 @@ Authorization: USER_TOKEN
 Connection: close
 ```
 
-期望：配置文件可见 xss.enabled: false。
+Expected: Config shows xss.enabled=false; stored XSS easier on notice fields
 
-## 截图
+## Screenshots
 
 ![xss-config](./screenshots/ST-VULN-007-xss-config.png)
 
-（配置截图；也可只贴 yml 片段）
+## Impact
 
-## 影响
+Increases XSS impact across /system/* endpoints.
 
-公告等内容位更容易被 XSS 打穿，和 006 叠在一起更狠。
+## Remediation
 
-## 修复
+Set xss.enabled=true in production.
 
-生产改成 true。
+## References
 
-## 关联
-
-- 本地报告：`../POC_VERIFICATION_REPORT.md`
-- 脚本：`poc_verify/startraining_poc_verify.py` / `startraining_jwt_forge.py`
+- Local report: `../POC_VERIFICATION_REPORT.md`
+- Scripts: `poc_verify/startraining_poc_verify.py`, `startraining_jwt_forge.py`

